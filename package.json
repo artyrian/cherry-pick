@@ -23,6 +23,7 @@
     "@actions/github": "^6.0.0"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.12",
     "@types/node": "^20.11.19",
     "@typescript-eslint/parser": "^7.0.1",
     "@vercel/ncc": "^0.38.1",
@@ -35,4 +36,4 @@
     "ts-jest": "^29.1.2",
     "typescript": "^5.3.3"
   }
-} 
+}

@@ -30,7 +30,7 @@ git push origin ${cherryPickBranch}
 `;
 }
 
-async function run(): Promise<void> {
+export async function run(): Promise<void> {
   try {
     // Get inputs
     const prNumber = parseInt(core.getInput('pr_number', { required: true }));
