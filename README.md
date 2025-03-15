@@ -129,6 +129,17 @@ jobs:
 
 ## Development
 
+### Requirements
+
+- Node.js version 20 or later (we recommend using [nvm](https://github.com/nvm-sh/nvm) to manage Node.js versions)
+  ```bash
+  # If using nvm, run:
+  nvm install 20
+  nvm use 20
+  ```
+
+### Getting Started
+
 1. Clone the repository
 2. Install dependencies:
    ```bash
@@ -143,6 +154,8 @@ jobs:
    ```bash
    npm test
    ```
+
+The test suite includes unit tests that verify the action's functionality for both successful cherry-pick operations and conflict handling scenarios.
 
 ## License
 
