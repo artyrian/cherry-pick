@@ -162,23 +162,28 @@ The test suite includes unit tests that verify the action's functionality for bo
 This action follows semantic versioning. To create a new release:
 
 1. Update version in `package.json`
-2. Commit your changes with a descriptive message:
+2. Build the action locally and commit the dist files:
+   ```bash
+   npm run build
+   git add dist/
+   git commit -m "chore: update dist files"
+   ```
+3. Update version and create release commit:
    ```bash
    git add package.json
    git commit -m "Release: version X.Y.Z"
    ```
-3. Create and push a new tag:
+4. Create and push a new tag:
    ```bash
    git tag vX.Y.Z  # Replace with your version
-   git push origin vX.Y.Z
+   git push origin main vX.Y.Z
    ```
 
 The GitHub Action will automatically:
 - Run tests
-- Build the action
+- Rebuild the action (and commit any changes to dist files)
 - Create a GitHub Release with:
   - Release notes generated from commit messages
-  - Built action file attached
   - Version number from the tag
 
 Major version tags (v1, v2, etc.) are also maintained for action stability. Users can pin their workflows to a major version to receive bug fixes and minor updates.
