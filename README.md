@@ -157,6 +157,23 @@ jobs:
 
 The test suite includes unit tests that verify the action's functionality for both successful cherry-pick operations and conflict handling scenarios.
 
+### Releases
+
+This action follows semantic versioning. To create a new release:
+
+1. Update version in `package.json`
+2. Create and push a new tag:
+   ```bash
+   git tag v1.0.0  # Replace with your version
+   git push origin v1.0.0
+   ```
+3. The GitHub Action will automatically:
+   - Run tests
+   - Create a GitHub Release
+   - Generate release notes
+
+Major version tags (v1, v2, etc.) are also maintained for action stability. Users can pin their workflows to a major version to receive bug fixes and minor updates.
+
 ## License
 
 MIT 
