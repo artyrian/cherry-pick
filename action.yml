@@ -1,0 +1,23 @@
+name: 'PR Cherry Pick Action'
+description: 'Cherry-pick a PR or its commits to a target branch'
+author: 'artyrian'
+
+inputs:
+  pr_number:
+    description: 'Pull Request number to cherry-pick from'
+    required: true
+  target_branch:
+    description: 'Target branch to cherry-pick to'
+    required: true
+  github_token:
+    description: 'GitHub token for authentication'
+    required: true
+    default: ${{ github.token }}
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
+
+branding:
+  icon: 'git-pull-request'
+  color: 'purple' 

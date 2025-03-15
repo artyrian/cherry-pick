@@ -1,0 +1,38 @@
+{
+  "name": "cherry-pick-action",
+  "version": "1.0.0",
+  "description": "GitHub Action to cherry-pick PR commits to a target branch",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "ncc build src/index.ts -o dist",
+    "format": "prettier --write **/*.ts",
+    "format-check": "prettier --check **/*.ts",
+    "lint": "eslint src/**/*.ts",
+    "test": "jest",
+    "all": "npm run build && npm run format && npm run lint && npm run test"
+  },
+  "keywords": [
+    "github",
+    "actions",
+    "cherry-pick"
+  ],
+  "author": "artyrian",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.10.1",
+    "@actions/github": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.19",
+    "@typescript-eslint/parser": "^7.0.1",
+    "@vercel/ncc": "^0.38.1",
+    "eslint": "^8.56.0",
+    "eslint-plugin-github": "^4.10.1",
+    "eslint-plugin-jest": "^27.6.3",
+    "jest": "^29.7.0",
+    "js-yaml": "^4.1.0",
+    "prettier": "^3.2.5",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.3.3"
+  }
+} 
