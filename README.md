@@ -161,19 +161,13 @@ The test suite includes unit tests that verify the action's functionality for bo
 
 This action follows semantic versioning. To create a new release:
 
-1. Update version in `package.json`
-2. Build the action locally and commit the dist files:
+1. Build the action locally and commit the dist files:
    ```bash
    npm run build
    git add dist/
    git commit -m "chore: update dist files"
    ```
-3. Update version and create release commit:
-   ```bash
-   git add package.json
-   git commit -m "Release: version X.Y.Z"
-   ```
-4. Create and push a new tag:
+2. Create and push a new tag:
    ```bash
    git tag vX.Y.Z  # Replace with your version
    git push origin main vX.Y.Z
