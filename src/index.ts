@@ -1,6 +1,7 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import { GitHub } from '@actions/github/lib/utils';
+import * as fs from 'fs';
 
 function getManualInstructions(prNumber: number, targetBranch: string, cherryPickBranch: string, commits: any[]): string {
   const commitsList = commits.map(commit => `git cherry-pick ${commit.sha}  # ${commit.commit.message.split('\n')[0]}`).join('\n');
@@ -30,6 +31,13 @@ git push origin ${cherryPickBranch}
 `;
 }
 
+function addToSummary(message: string) {
+  const summaryFile = process.env.GITHUB_STEP_SUMMARY;
+  if (summaryFile) {
+    fs.appendFileSync(summaryFile, message + '\n');
+  }
+}
+
 export async function run(): Promise<void> {
   try {
     // Get inputs
@@ -57,6 +65,8 @@ export async function run(): Promise<void> {
     });
 
     core.info(`Found ${commits.length} commits in PR #${prNumber}`);
+    addToSummary(`## Cherry Pick Operation\n`);
+    addToSummary(`Found ${commits.length} commits in PR #${prNumber}\n`);
 
     // Create a new branch from the target branch
     const cherryPickBranch = `cherry-pick-${prNumber}-to-${targetBranch}`;
@@ -88,15 +98,19 @@ export async function run(): Promise<void> {
           commit_message: `Cherry-pick: ${commit.commit.message}`
         });
         core.info(`Successfully cherry-picked commit ${commit.sha}`);
+        addToSummary(`✅ Successfully cherry-picked commit ${commit.sha}\n`);
       } catch (error) {
         hasConflicts = true;
         core.error(`Failed to cherry-pick commit ${commit.sha}`);
         core.error('Conflicts detected during cherry-pick');
+        addToSummary(`❌ Failed to cherry-pick commit ${commit.sha}\n`);
+        addToSummary(`⚠️ Conflicts detected during cherry-pick\n`);
         
         // Output manual instructions
         const manualInstructions = getManualInstructions(prNumber, targetBranch, cherryPickBranch, commits);
         core.info('\n=== Manual Cherry-Pick Instructions ===\n');
         core.info(manualInstructions);
+        addToSummary(`\n### Manual Cherry-Pick Instructions\n\`\`\`bash\n${manualInstructions}\n\`\`\`\n`);
         
         // Delete the branch since we couldn't complete the automated process
         try {
@@ -107,6 +121,7 @@ export async function run(): Promise<void> {
           });
         } catch (deleteError) {
           core.warning('Failed to delete incomplete branch');
+          addToSummary(`⚠️ Failed to delete incomplete branch\n`);
         }
         
         throw error;
@@ -124,16 +139,23 @@ export async function run(): Promise<void> {
         body: `Cherry-picking changes from PR #${prNumber}\n\nOriginal PR: ${pullRequest.html_url}`
       });
 
-      core.info(`Created new PR: ${newPr.html_url}`);
+      const successMessage = `Created new PR: ${newPr.html_url}`;
+      core.info(successMessage);
       core.setOutput('cherry_pick_pr_url', newPr.html_url);
       core.setOutput('cherry_pick_pr_number', newPr.number);
+
+      addToSummary(`\n### Success! 🎉\n`);
+      addToSummary(`New PR created: [#${newPr.number}](${newPr.html_url})\n`);
+      addToSummary(`\nOriginal PR: [#${prNumber}](${pullRequest.html_url})\n`);
     }
 
   } catch (error) {
     if (error instanceof Error) {
       core.setFailed(error.message);
+      addToSummary(`\n### Failed ❌\n${error.message}\n`);
     } else {
       core.setFailed('An unexpected error occurred');
+      addToSummary(`\n### Failed ❌\nAn unexpected error occurred\n`);
     }
   }
 }
