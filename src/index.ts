@@ -95,7 +95,7 @@ export async function run(): Promise<void> {
           repo,
           base: cherryPickBranch,
           head: commit.sha,
-          commit_message: `Cherry-pick: ${commit.commit.message}`
+          commit_message: commit.commit.message
         });
         core.info(`Successfully cherry-picked commit ${commit.sha}`);
         addToSummary(`✅ Successfully cherry-picked commit ${commit.sha}\n`);
