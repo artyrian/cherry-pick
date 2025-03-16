@@ -1,103 +1,10 @@
-# PR Cherry Pick Action
+# PR Cherry Pick Action 🍒
 
-This GitHub Action allows you to cherry-pick commits from a Pull Request to a target branch. It creates a new PR with the cherry-picked changes.
+Automatically cherry-pick Pull Request changes to another branch. Simple to use, with  conflict handling.
 
-## Features
+## 🚀 Quick Start
 
-- Cherry-picks all commits from a specified PR to a target branch
-- Creates a new branch for the cherry-picked commits
-- Automatically creates a new PR with the changes
-- Provides output variables for the new PR URL and number
-- Provides copy-paste ready commands for manual resolution when conflicts occur
-
-## Usage
-
-Add the following step to your workflow:
-
-```yaml
-- name: Cherry Pick PR
-  uses: artyrian/cherry-pick@v1
-  with:
-    pr_number: 123        # The PR number to cherry-pick from
-    target_branch: main   # The branch to cherry-pick to
-    github_token: ${{ secrets.GITHUB_TOKEN }}
-```
-
-## Inputs
-
-| Input | Description | Required | Default |
-|-------|-------------|----------|---------|
-| `pr_number` | Pull Request number to cherry-pick from | Yes | N/A |
-| `target_branch` | Target branch to cherry-pick to | Yes | N/A |
-| `github_token` | GitHub token for authentication | Yes | `${{ github.token }}` |
-
-## GitHub Token Permissions
-
-The GitHub token needs the following permissions:
-- `contents: write` - for creating and pushing branches
-- `pull-requests: write` - for creating pull requests
-
-If you're using the default `GITHUB_TOKEN`, add these permissions to your workflow:
-
-```yaml
-permissions:
-  contents: write
-  pull-requests: write
-```
-
-For custom tokens (e.g., PAT), ensure it has these permissions enabled.
-
-### Using Default Token
-
-```yaml
-name: Cherry Pick PR
-permissions:
-  contents: write
-  pull-requests: write
-jobs:
-  cherry-pick:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: artyrian/cherry-pick@v1
-        with:
-          pr_number: 123
-          target_branch: main
-          github_token: ${{ github.token }}
-```
-
-### Using Custom PAT
-
-```yaml
-name: Cherry Pick PR
-jobs:
-  cherry-pick:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: artyrian/cherry-pick@v1
-        with:
-          pr_number: 123
-          target_branch: main
-          github_token: ${{ secrets.CUSTOM_PAT }}  # PAT with required permissions
-```
-
-## Outputs
-
-| Output | Description |
-|--------|-------------|
-| `cherry_pick_pr_url` | URL of the newly created PR |
-| `cherry_pick_pr_number` | Number of the newly created PR |
-
-## Handling Conflicts
-
-When conflicts occur during the cherry-pick process, the action will output copy-paste ready commands including:
-- Branch setup commands
-- Cherry-pick commands for each commit with commit messages as comments
-- Conflict resolution commands
-- Push and PR creation instructions
-
-## Example Workflow
+1. Create `.github/workflows/cherry-pick.yml` in your repository:
 
 ```yaml
 name: Cherry Pick PR
@@ -119,75 +26,74 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
-      - name: Cherry Pick PR
-        uses: artyrian/cherry-pick@v1
+      - uses: artyrian/cherry-pick@v1
         with:
           pr_number: ${{ github.event.inputs.pr_number }}
           target_branch: ${{ github.event.inputs.target_branch }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-## Development
+2. To use:
+   - Go to Actions → Cherry Pick PR → Run workflow
+   - Enter PR number and target branch
+   - Click Run
 
-### Requirements
+## ✨ Features
 
-- Node.js version 20 or later (we recommend using [nvm](https://github.com/nvm-sh/nvm) to manage Node.js versions)
-  ```bash
-  # If using nvm, run:
-  nvm install 20
-  nvm use 20
-  ```
+- Cherry-picks all commits from a PR to target branch
+- Automatically creates a new PR
+- Conflict detection with step-by-step resolution guide
 
-### Getting Started
+## 📝 Configuration
 
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Make your changes
-4. Build the action:
-   ```bash
-   npm run build
-   ```
-5. Run tests:
-   ```bash
-   npm test
-   ```
+### Inputs
 
-The test suite includes unit tests that verify the action's functionality for both successful cherry-pick operations and conflict handling scenarios.
+| Input | Description | Required |
+|-------|-------------|----------|
+| `pr_number` | PR to cherry-pick from | Yes |
+| `target_branch` | Branch to cherry-pick to | Yes |
+| `github_token` | GitHub token | No (default: `github.token`) |
 
-### Releases
+### Outputs
 
-This action follows semantic versioning. To create a new release:
+| Output | Description |
+|--------|-------------|
+| `cherry_pick_pr_url` | New PR URL |
+| `cherry_pick_pr_number` | New PR number |
 
-1. Build the action locally and commit the dist files:
-   ```bash
-   npm run build
-   git add dist/
-   git commit -m "chore: update dist files"
-   ```
-2. Update version in `package.json` and commit:
-   ```bash
-   # Edit package.json to update version
-   git add package.json
-   git commit -m "Release: version X.Y.Z"
-   ```
-3. Create and push a new tag:
-   ```bash
-   git tag vX.Y.Z  # Replace with your version
-   git push origin main vX.Y.Z
-   ```
+### Permissions
 
-The GitHub Action will automatically:
-- Run tests
-- Rebuild the action (and commit any changes to dist files)
-- Create a GitHub Release with:
-  - Release notes generated from commit messages
-  - Version number from the tag
+Add to your workflow:
+```yaml
+permissions:
+  contents: write
+  pull-requests: write
+```
 
-Major version tags (v1, v2, etc.) are also maintained for action stability. Users can pin their workflows to a major version to receive bug fixes and minor updates.
+For custom tokens (e.g., PAT or Github application tokens), ensure it has these permissions enabled.
 
-## License
+## 🛠️ Conflict Resolution
+
+When conflicts occur, the action provides:
+- Ready-to-use commands for manual resolution
+- Step-by-step guidance
+- Branch cleanup on failure
+
+## 📦 Development
+
+Requirements:
+- Node.js 20+
+
+```bash
+# Setup
+npm install
+
+# Build
+npm run build
+
+# Test
+npm test
+```
+
+## 📄 License
 
 MIT 
