@@ -157,6 +157,24 @@ jobs:
 
 The test suite includes unit tests that verify the action's functionality for both successful cherry-pick operations and conflict handling scenarios.
 
+### Version Management
+
+The project follows semantic versioning (MAJOR.MINOR.PATCH):
+- MAJOR version for incompatible API changes
+- MINOR version for added functionality in a backwards compatible manner
+- PATCH version for backwards compatible bug fixes
+
+To update the version:
+1. Edit `package.json`:
+   ```json
+   {
+     "name": "cherry-pick-action",
+     "version": "X.Y.Z",  // Update this line
+     ...
+   }
+   ```
+2. The version should match the git tag you'll create in the release process
+
 ### Releases
 
 This action follows semantic versioning. To create a new release:
@@ -167,7 +185,13 @@ This action follows semantic versioning. To create a new release:
    git add dist/
    git commit -m "chore: update dist files"
    ```
-2. Create and push a new tag:
+2. Update version in `package.json` and commit:
+   ```bash
+   # Edit package.json to update version
+   git add package.json
+   git commit -m "Release: version X.Y.Z"
+   ```
+3. Create and push a new tag:
    ```bash
    git tag vX.Y.Z  # Replace with your version
    git push origin main vX.Y.Z
