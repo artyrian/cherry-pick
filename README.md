@@ -157,24 +157,6 @@ jobs:
 
 The test suite includes unit tests that verify the action's functionality for both successful cherry-pick operations and conflict handling scenarios.
 
-### Version Management
-
-The project follows semantic versioning (MAJOR.MINOR.PATCH):
-- MAJOR version for incompatible API changes
-- MINOR version for added functionality in a backwards compatible manner
-- PATCH version for backwards compatible bug fixes
-
-To update the version:
-1. Edit `package.json`:
-   ```json
-   {
-     "name": "cherry-pick-action",
-     "version": "X.Y.Z",  // Update this line
-     ...
-   }
-   ```
-2. The version should match the git tag you'll create in the release process
-
 ### Releases
 
 This action follows semantic versioning. To create a new release:
