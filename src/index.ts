@@ -90,13 +90,30 @@ export async function run(): Promise<void> {
     // Cherry-pick each commit
     for (const commit of commits) {
       try {
-        await octokit.rest.repos.merge({
+        // Get the current branch ref
+        const { data: branchRef } = await octokit.rest.git.getRef({
           owner,
           repo,
-          base: cherryPickBranch,
-          head: commit.sha,
-          commit_message: commit.commit.message
+          ref: `heads/${cherryPickBranch}`
         });
+
+        // Create a new commit using the same tree but with a single parent
+        const { data: newCommit } = await octokit.rest.git.createCommit({
+          owner,
+          repo,
+          message: commit.commit.message,
+          tree: commit.commit.tree.sha,
+          parents: [branchRef.object.sha]
+        });
+
+        // Update the branch reference
+        await octokit.rest.git.updateRef({
+          owner,
+          repo,
+          ref: `heads/${cherryPickBranch}`,
+          sha: newCommit.sha
+        });
+
         core.info(`Successfully cherry-picked commit ${commit.sha}`);
         addToSummary(`✅ Successfully cherry-picked commit ${commit.sha}\n`);
       } catch (error) {

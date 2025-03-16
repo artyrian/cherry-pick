@@ -30043,12 +30043,26 @@ function run() {
             // Cherry-pick each commit
             for (const commit of commits) {
                 try {
-                    yield octokit.rest.repos.merge({
+                    // Get the current branch ref
+                    const { data: branchRef } = yield octokit.rest.git.getRef({
                         owner,
                         repo,
-                        base: cherryPickBranch,
-                        head: commit.sha,
-                        commit_message: commit.commit.message
+                        ref: `heads/${cherryPickBranch}`
+                    });
+                    // Create a new commit using the same tree but with a single parent
+                    const { data: newCommit } = yield octokit.rest.git.createCommit({
+                        owner,
+                        repo,
+                        message: commit.commit.message,
+                        tree: commit.commit.tree.sha,
+                        parents: [branchRef.object.sha]
+                    });
+                    // Update the branch reference
+                    yield octokit.rest.git.updateRef({
+                        owner,
+                        repo,
+                        ref: `heads/${cherryPickBranch}`,
+                        sha: newCommit.sha
                     });
                     core.info(`Successfully cherry-picked commit ${commit.sha}`);
                     addToSummary(`✅ Successfully cherry-picked commit ${commit.sha}\n`);
