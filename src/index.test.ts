@@ -25,7 +25,10 @@ const mockOctokit = {
     git: {
       getRef: jest.fn(),
       createRef: jest.fn(),
-      deleteRef: jest.fn()
+      deleteRef: jest.fn(),
+      getCommit: jest.fn(),
+      createCommit: jest.fn(),
+      updateRef: jest.fn()
     },
     repos: {
       merge: jest.fn()
@@ -73,7 +76,10 @@ describe('Cherry Pick Action', () => {
       data: [
         {
           sha: 'abc123',
-          commit: { message: 'Test commit' }
+          commit: { 
+            message: 'Test commit',
+            tree: { sha: 'tree-sha' }
+          }
         }
       ]
     });
@@ -89,8 +95,20 @@ describe('Cherry Pick Action', () => {
       data: { object: { sha: 'base-sha' } }
     });
 
+    mockOctokit.rest.git.getCommit.mockResolvedValue({
+      data: {
+        tree: { sha: 'tree-sha' },
+        message: 'Test commit'
+      }
+    });
+
+    mockOctokit.rest.git.createCommit.mockResolvedValue({
+      data: { sha: 'new-commit-sha' }
+    });
+
     mockOctokit.rest.git.createRef.mockResolvedValue({});
     mockOctokit.rest.git.deleteRef.mockResolvedValue({});
+    mockOctokit.rest.git.updateRef.mockResolvedValue({});
     mockOctokit.rest.repos.merge.mockResolvedValue({});
   });
 
@@ -99,7 +117,7 @@ describe('Cherry Pick Action', () => {
     await run();
 
     expect(mockOctokit.rest.git.createRef).toHaveBeenCalled();
-    expect(mockOctokit.rest.repos.merge).toHaveBeenCalled();
+    expect(mockOctokit.rest.git.updateRef).toHaveBeenCalled();
     expect(mockOctokit.rest.pulls.create).toHaveBeenCalled();
 
     expect(mockSetOutput).toHaveBeenCalledWith('cherry_pick_pr_url', 'https://github.com/test-owner/test-repo/pull/456');
@@ -107,7 +125,7 @@ describe('Cherry Pick Action', () => {
   });
 
   it('should handle cherry-pick conflicts', async () => {
-    mockOctokit.rest.repos.merge.mockRejectedValue(new Error('Merge conflict'));
+    mockOctokit.rest.git.createCommit.mockRejectedValue(new Error('Cherry-pick conflict'));
 
     const { run } = await import('./index');
     await run();
